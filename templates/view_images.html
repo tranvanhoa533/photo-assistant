@@ -1,0 +1,10 @@
+
+<h1>Hello Results Page!</h1>
+<a href="{{ url_for('upload_image') }}">Back</a><p>
+
+{% for file_url in file_urls %}
+    <!-- <li><img style="height: 150px" src="{{ file_url }}"></li> -->
+    <div style="float:left; width:200px; height:200px;">
+            <img src="{{ file_url }}" class="img-thumbnail" alt="">
+    </div>
+{% endfor %}
