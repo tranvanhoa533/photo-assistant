@@ -1,0 +1,5 @@
+Flask
+Flask-SqlAlchemy
+flask-uploads
+flask-dropzone
+flask
