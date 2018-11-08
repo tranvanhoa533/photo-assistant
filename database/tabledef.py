@@ -17,10 +17,11 @@ class User(Base):
     password = Column(String)
  
     #----------------------------------------------------------------------
-    def __init__(self, username, password):
+    def __init__(self, username, password, email='abc@gmail.com'):
         """"""
         self.username = username
         self.password = password
+        self.email = email
  
 # create tables
 Base.metadata.create_all(engine)
