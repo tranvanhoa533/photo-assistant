@@ -4,6 +4,9 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_cl
 import os
 from sqlalchemy.orm import sessionmaker
 from database.tabledef import *
+from PIL import Image
+import requests
+from io import BytesIO
 
 engine = create_engine('sqlite:///ap.db', echo=True)
 
@@ -65,14 +68,20 @@ def upload_image():
         file_obj = request.files
         for f in file_obj:
             file = request.files.get(f)
-            
             # save the file with to our photos folder
             filename = photos.save(
                 file,
                 name=file.filename    
             )
             # append image urls
-            file_urls.append(photos.url(filename))
+            photo_url = photos.url(filename)
+        
+            response = requests.get(photo_url)
+            img = Image.open(BytesIO(response.content))
+            (w, h) = img.size
+            photo_info = {'url': photo_url, 'width': w, 'height': h}
+
+            file_urls.append(photo_info)
             
         session['file_urls'] = file_urls
         return "uploading..."
@@ -91,7 +100,7 @@ def view_images():
     print(file_urls)
     session.pop('file_urls', None)
     
-    return render_template('index.html', file_urls=file_urls)
+    return render_template('view_images.html', file_urls=file_urls)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=4000)
