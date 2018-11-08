@@ -1,10 +1,10 @@
 # photo-assistant
 Advanced programming 2018 - Group 4 - Assignment
 
-install lib:
+## install lib:
 
-pip install -r requirement.txt
+`pip install -r requirement.txt`
 
-run app 
+## run app 
 
-python3 app.py
+`python3 app.py`
