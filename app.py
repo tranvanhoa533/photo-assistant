@@ -29,6 +29,38 @@ def home(status = None):
         return render_template('login.html', status = status)
     else:
         return "Hello Boss!  <a href='/logout'>Logout</a>"
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin(status = None):
+    if request.method == 'GET' or redirect:
+        if not session.get('logged_in'):
+            return render_template('signin.html', status = status)
+        else:
+            return "this should redirect to home!"
+    elif request.method == 'POST':
+        try:
+            Session = sessionmaker(bind=engine)
+            s = Session()
+            email = request.form['email']
+            username = request.form['username']
+            password = request.form['password']
+            confirmedpassword = request.form['confirmpassword']
+
+            if password != confirmedpassword:
+                return render_template('signin.html', status = True)
+
+            print(email + '\t' + username + '\t' + password + '\t' + confirmedpassword)
+
+            user = User(username, password, email)
+            s.add(user)
+            s.commit()
+
+        except Exception as ex :
+            print("error in insert operation", ex)
+
+
+        finally:
+            return "Sign up success!!!!! tada"
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -38,6 +70,8 @@ def do_admin_login():
     Session = sessionmaker(bind=engine)
     s = Session()
     query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
+    print(POST_USERNAME + '\t' + POST_PASSWORD)
+    print("query" + str(query))
     result = query.first()
     if result:
         status = None

@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from tabledef import *
+from database.tabledef import *
  
 engine = create_engine('sqlite:///ap.db', echo=True)
  
