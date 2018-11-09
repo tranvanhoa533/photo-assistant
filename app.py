@@ -3,10 +3,12 @@ from flask_dropzone import Dropzone
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 import os
 from sqlalchemy.orm import sessionmaker
-from database.tabledef import *
+from sqlalchemy import create_engine, Date
+from database.tabledef import User, UserImage
 from PIL import Image
 import requests
 from io import BytesIO
+import datetime
 
 engine = create_engine('sqlite:///ap.db', echo=True)
 
@@ -25,26 +27,34 @@ app.config['DROPZONE_ALLOWED_FILE_CUSTOM'] = True
 app.config['DROPZONE_ALLOWED_FILE_TYPE'] = 'image/*'
 app.config['DROPZONE_REDIRECT_VIEW'] = 'view_images'
 
+Session = sessionmaker(bind=engine)
+s = Session()
 
 @app.route('/')
 def home(status = None):
-    if not session.get('logged_in'):
+    if not session.get('user_id'):
         return render_template('login.html', status = status)
     else:
-        return "Hello Boss!  <a href='/logout'>Logout</a>"
+        query = s.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
+        result = query.all()
+        file_urls = []
+        for userimg in result:
+            photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
+            file_urls.append(photo_info)
+            session['file_urls'] = file_urls
+        return render_template('view_images.html', file_urls=file_urls)
  
 @app.route('/login', methods=['POST'])
 def do_admin_login():
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
  
-    Session = sessionmaker(bind=engine)
-    s = Session()
     query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
     result = query.first()
     if result:
         status = None
-        session['logged_in'] = True
+        session['user_name'] = POST_USERNAME
+        session['user_id'] = result.userid
     else:
         status = True
         flash('wrong password!')
@@ -52,7 +62,8 @@ def do_admin_login():
 
 @app.route("/logout")
 def logout():
-    session['logged_in'] = False
+    session['user_name'] = None
+    session.pop('file_urls', None)
     return home()
 
 # @app.route('/')
@@ -82,7 +93,11 @@ def upload_image():
             photo_info = {'url': photo_url, 'width': w, 'height': h}
 
             file_urls.append(photo_info)
-            
+
+            userimg = UserImage(session['user_id'], photo_url, img.size, uploaddate='')
+            s.add(userimg)
+
+        s.commit()
         session['file_urls'] = file_urls
         return "uploading..."
     # return dropzone template on GET request    
@@ -98,7 +113,7 @@ def view_images():
     # set the file_urls and remove the session variable
     file_urls = session['file_urls']
     print(file_urls)
-    session.pop('file_urls', None)
+    
     
     return render_template('view_images.html', file_urls=file_urls)
 
