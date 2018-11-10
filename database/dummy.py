@@ -20,5 +20,3 @@ session.add(user)
  
 # commit the record the database
 session.commit()
- 
-session.commit()

@@ -1,10 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
 
-<h1>Hello Results Page!</h1>
-<a href="{{ url_for('upload_image') }}">Back</a><p>
+  <head>
 
-{% for file_url in file_urls %}
-    <!-- <li><img style="height: 150px" src="{{ file_url }}"></li> -->
-    <div style="float:left; width:200px; height:200px;">
-            <img src="{{ file_url }}" class="img-thumbnail" alt="">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Thumbnail Gallery - Start Bootstrap Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
+
+    <!-- Custom styles for this template -->
+    <link href="/static/thumbnail-gallery.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">Start Bootstrap</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home
+                <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+      <h1 class="my-4 text-center text-lg-left">Thumbnail Gallery</h1>
+
+      <div class="row text-center text-lg-left">
+      
+      <section>
+        {% for img in file_urls %}
+        <div class="div-img" style="width:{{img.width*200/img.height}}px;flex-grow:{{img.width*200/img.height}}">
+          <i style="padding-bottom:{{img.height/img.width*100}}%"></i>
+          <img src="{{img.url}}" alt="">
+        </div>
+        {% endfor %}
+     </section>
+
     </div>
-{% endfor %}
+    <!-- /.container -->
+
+    <!-- Footer -->
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
+      </div>
+      <!-- /.container -->
+    </footer>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="/static/jquery/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+
+</html>
