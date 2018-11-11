@@ -103,7 +103,7 @@ def do_admin_login():
 
 @app.route("/logout")
 def logout():
-    session['user_name'] = None
+    session['user_id'] = None
     session.pop('file_urls', None)
     return home()
 
@@ -136,7 +136,7 @@ def upload_image():
             (w, h) = img.size
             photo_info = {'url': photo_url, 'width': w, 'height': h}
 
-            file_urls.append(photo_info)
+            file_urls.insert(0, photo_info)
 
             userimg = UserImage(session['user_id'], photo_url, img.size, uploaddate='')
             sess.add(userimg)

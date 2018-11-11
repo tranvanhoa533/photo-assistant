@@ -4,6 +4,11 @@
  * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-thumbnail-gallery/blob/master/LICENSE)
  */
 
+
+ .navbar-light .navbar-nav .nav-link {
+   color: #4285f4
+ }
+
 body {
   padding-top: 54px;
 }
