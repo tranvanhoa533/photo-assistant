@@ -44,17 +44,16 @@ def home(status = None):
             session['file_urls'] = file_urls
         return render_template('view_images.html', file_urls=file_urls)
 
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin(status = None):
-    if request.method == 'GET' or redirect:
+    if request.method == 'GET':
         if not session.get('logged_in'):
             return render_template('signin.html', status = status)
         else:
             return "this should redirect to home!"
     elif request.method == 'POST':
         try:
-            Session = sessionmaker(bind=engine)
-            s = Session()
             email = request.form['email']
             username = request.form['username']
             password = request.form['password']
@@ -68,14 +67,13 @@ def signin(status = None):
             user = User(username, password, email)
             s.add(user)
             s.commit()
-
+            return "Sign up success!!!!! tada"
         except Exception as ex :
             print("error in insert operation", ex)
+            return "Register error"
 
 
-        finally:
-            return "Sign up success!!!!! tada"
- 
+
 @app.route('/login', methods=['POST'])
 def do_admin_login():
     POST_USERNAME = str(request.form['username'])
@@ -88,17 +86,19 @@ def do_admin_login():
     if result:
         status = None
         session['user_name'] = POST_USERNAME
-        session['user_id'] = result.userid
+        session['user_id'] = result.id
     else:
         status = True
         flash('wrong password!')
     return home(status)
+
 
 @app.route("/logout")
 def logout():
     session['user_name'] = None
     session.pop('file_urls', None)
     return home()
+
 
 # @app.route('/')
 @app.route('/upload_image', methods=['GET', 'POST'])
@@ -137,6 +137,7 @@ def upload_image():
     # return dropzone template on GET request    
     return render_template('upload_image.html')
 
+
 @app.route('/view_images')
 def view_images():
     
@@ -147,9 +148,9 @@ def view_images():
     # set the file_urls and remove the session variable
     file_urls = session['file_urls']
     print(file_urls)
-    
 
     return render_template('view_images.html', file_urls=file_urls)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=4000)

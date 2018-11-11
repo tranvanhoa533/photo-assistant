@@ -12,12 +12,13 @@ class User(Base):
     """"""
     __tablename__ = "users"
  
-    userid = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     username = Column(String)
     password = Column(String)
+    email = Column(String)
  
     #----------------------------------------------------------------------
-    def __init__(self, username, password, email='abc@gmail.com'):
+    def __init__(self, username, password, email='test@gmail.com'):
         """"""
         self.username = username
         self.password = password
