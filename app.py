@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request, session, url_for, f
 from flask_dropzone import Dropzone
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 import os
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine, Date
 from database.tabledef import User, UserImage
 from PIL import Image
@@ -27,28 +27,30 @@ app.config['DROPZONE_ALLOWED_FILE_CUSTOM'] = True
 app.config['DROPZONE_ALLOWED_FILE_TYPE'] = 'image/*'
 app.config['DROPZONE_REDIRECT_VIEW'] = 'view_images'
 
-Session = sessionmaker(bind=engine)
-s = Session()
+
 
 @app.route('/')
 def home(status = None):
     if not session.get('user_id'):
         return render_template('login.html', status = status)
     else:
-        query = s.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
+        Session = scoped_session(sessionmaker(bind=engine))
+        sess = Session()
+        query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
         result = query.all()
         file_urls = []
         for userimg in result:
             photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
             file_urls.append(photo_info)
             session['file_urls'] = file_urls
+        sess.close()
         return render_template('view_images.html', file_urls=file_urls)
 
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin(status = None):
     if request.method == 'GET':
-        if not session.get('logged_in'):
+        if not session.get('user_id'):
             return render_template('signin.html', status = status)
         else:
             return "this should redirect to home!"
@@ -63,10 +65,13 @@ def signin(status = None):
                 return render_template('signin.html', status = True)
 
             print(email + '\t' + username + '\t' + password + '\t' + confirmedpassword)
-
+            
+            Session = scoped_session(sessionmaker(bind=engine))
+            sess = Session()
             user = User(username, password, email)
-            s.add(user)
-            s.commit()
+            sess.add(user)
+            sess.commit()
+            sess.close()
             return "Sign up success!!!!! tada"
         except Exception as ex :
             print("error in insert operation", ex)
@@ -79,14 +84,17 @@ def do_admin_login():
     POST_USERNAME = str(request.form['username'])
     POST_PASSWORD = str(request.form['password'])
 
-    query = s.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
+    Session = scoped_session(sessionmaker(bind=engine))
+    sess = Session()
+    query = sess.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
     print(POST_USERNAME + '\t' + POST_PASSWORD)
-    print("query" + str(query))
     result = query.first()
+    sess.close()
+    
     if result:
         status = None
         session['user_name'] = POST_USERNAME
-        session['user_id'] = result.id
+        session['user_id'] = result.userid
     else:
         status = True
         flash('wrong password!')
@@ -110,6 +118,8 @@ def upload_image():
     file_urls = session['file_urls']
     # handle image upload from Dropzone
     if request.method == 'POST':
+        Session = scoped_session(sessionmaker(bind=engine))
+        sess = Session()
         file_obj = request.files
         for f in file_obj:
             file = request.files.get(f)
@@ -129,9 +139,9 @@ def upload_image():
             file_urls.append(photo_info)
 
             userimg = UserImage(session['user_id'], photo_url, img.size, uploaddate='')
-            s.add(userimg)
+            sess.add(userimg)
 
-        s.commit()
+        sess.commit()
         session['file_urls'] = file_urls
         return "uploading..."
     # return dropzone template on GET request    

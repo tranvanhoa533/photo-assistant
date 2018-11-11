@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.tabledef import *
+from tabledef import *
  
 engine = create_engine('sqlite:///ap.db', echo=True)
  
@@ -12,7 +12,7 @@ session = Session()
 user = User("admin","admin")
 session.add(user)
  
-user = User("vanhoa","123")
+user = User("vanhoa","123", 'vanhoa@xyz')
 session.add(user)
  
 user = User("test","test")
