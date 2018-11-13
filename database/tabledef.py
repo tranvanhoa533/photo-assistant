@@ -43,5 +43,19 @@ class UserImage(Base):
         self.imghash = imghash
         self.uploaddate = uploaddate
 
+class SimilarImage(Base):
+
+    __tablename__ = "similarimages"
+    id = Column(Integer, primary_key=True)
+    userid = Column(String)
+    imgurl = Column(String)
+    index = Column(String)# id from userimages table, use for delete similar images
+
+    def __init__(self, userid, imgurl, index):
+        self.userid = userid
+        self.imgurl = imgurl
+        self.index = index
+
+
 # create tables
 Base.metadata.create_all(engine)

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>AP</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/thumbnail-gallery.css" rel="stylesheet">
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400,300' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+
+    <!-- <link rel="stylesheet" href="css/style.css"> -->
+
+  </head>
+
+  <body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="/view_images">Photo Assistant</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+              </form>
+
+            <li class="nav-item">
+              <a class="nav-link" href="/upload_image">Upload
+                <!-- <span class="sr-only">(current)</span> -->
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/view_images">Photo</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Album</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Assistant</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+      <div class="m-p-g">
+        <div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">
+            {% for img in file_urls %}
+            <img src="{{img.url}}" data-full="{{img.url}}" class="m-p-g__thumbs-img" />
+            {% endfor %}
+        </div>
+        <div class="m-p-g__fullscreen"></div>
+        <hr>
+      </div>
+      <!-- <h1 class="my-4 text-center text-lg-left">Gallery</h1>
+
+      <div class="row text-center text-lg-left">
+
+      <section>
+        {% for img in file_urls %}
+        <div class="div-img" style="width:{{img.width*200/img.height}}px;flex-grow:{{img.width*200/img.height}}">
+          <i style="padding-bottom:{{img.height/img.width*100}}%"></i>
+          <img src="{{img.url}}" alt="">
+        </div>
+        {% endfor %}
+        </section>
+      </div> -->
+
+
+
+    </div>
+    <!-- /.container -->
+
+    <!-- Footer -->
+    <!-- <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
+      </div> -->
+      <!-- /.container -->
+    <!-- </footer> -->
+
+    <!-- Bootstrap core JavaScript -->
+    <script>
+        var elem = document.querySelector('.m-p-g');
+
+        document.addEventListener('DOMContentLoaded', function() {
+          // document.getElementsByClassName("navbar").style.top = "-50px";
+          var gallery = new MaterialPhotoGallery(elem);
+        });
+
+
+        var img = document.querySelector(".m-p-g__thumbs-img");
+
+        img.onclick = function(){
+          var nav = document.querySelector(".navbar");
+          nav.style.display = "none";
+
+          var close = document.querySelector(".m-p-g__controls-close");
+          close.onclick = function(){
+            nav.style.display = "flex";
+          }
+        }
+
+
+
+
+    </script>
+    <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/45226/material-photo-gallery.min.js'></script>
+    <script src="/static/jquery/jquery.min.js"></script>
+    <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+
+</html>
