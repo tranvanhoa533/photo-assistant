@@ -53,7 +53,7 @@ def signin(status = None):
         if not session.get('user_id'):
             return render_template('signin.html', status = status)
         else:
-            return "this should redirect to home!"
+            return redirect(url_for('home'))
     elif request.method == 'POST':
         try:
             email = request.form['email']
@@ -72,12 +72,23 @@ def signin(status = None):
             sess.add(user)
             sess.commit()
             sess.close()
-            return "Sign up success!!!!! tada"
+            return redirect(url_for('home'))
         except Exception as ex :
             print("error in insert operation", ex)
             return "Register error"
 
 
+@app.route('/view_similar_images', methods=['GET', 'POST'])
+def view_similarimages():
+    # redirect to home if no images to display
+    if "file_urls" not in session or session['file_urls'] == []:
+        return redirect(url_for('upload_image'))
+
+    # set the file_urls and remove the session variable
+    file_urls = session['file_urls']
+    print(file_urls)
+
+    return render_template('view_similar_images.html', file_urls=file_urls)
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
