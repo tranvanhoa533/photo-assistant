@@ -3,7 +3,7 @@ from flask_dropzone import Dropzone
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 import os
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import create_engine, Date
+from sqlalchemy import create_engine, Date, and_
 from database.tabledef import User, UserImage
 from PIL import Image
 import requests
@@ -80,15 +80,20 @@ def signin(status = None):
 
 @app.route('/view_similar_images', methods=['GET', 'POST'])
 def view_similarimages():
-    # redirect to home if no images to display
-    if "file_urls" not in session or session['file_urls'] == []:
-        return redirect(url_for('upload_image'))
-
-    # set the file_urls and remove the session variable
-    file_urls = session['file_urls']
-    print(file_urls)
-
-    return render_template('view_similar_images.html', file_urls=file_urls)
+    Session = scoped_session(sessionmaker(bind=engine))
+    sess = Session()
+    query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
+    result = query.all()
+    groups = {}
+    for userimg in result:
+        if userimg.groupid is not None:
+            photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
+            if userimg.groupid not in groups:
+                groups[userimg.groupid] = []
+            groups[userimg.groupid].append(photo_info)
+    sess.close()
+    print(groups)
+    return render_template('view_similar_images.html', groups=groups)
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -149,7 +154,7 @@ def upload_image():
 
             file_urls.insert(0, photo_info)
 
-            userimg = UserImage(session['user_id'], photo_url, img.size, uploaddate='')
+            userimg = UserImage(session['user_id'], photo_url, img.size, None, uploaddate='')
             sess.add(userimg)
 
         sess.commit()
@@ -161,7 +166,7 @@ def upload_image():
 
 @app.route('/view_images')
 def view_images():
-    
+
     # redirect to home if no images to display
     if "file_urls" not in session or session['file_urls'] == []:
         return redirect(url_for('upload_image'))
