@@ -34,27 +34,26 @@ class UserImage(Base):
     imgh = Column(Integer)
     imghash = Column(String)
     uploaddate = Column(String)
+    groupid = Column(Integer, nullable=True)
 
-    def __init__(self, userid, imgurl, imgsize, imghash = '', uploaddate = ''):
+    def __init__(self, userid, imgurl, imgsize, groupid, imghash = '', uploaddate = ''):
         self.userid = userid
         self.imgurl = imgurl
         self.imgw = imgsize[0]
         self.imgh = imgsize[1]
         self.imghash = imghash
         self.uploaddate = uploaddate
+        self.groupid = groupid
 
-class SimilarImage(Base):
-
-    __tablename__ = "similarimages"
-    id = Column(Integer, primary_key=True)
-    userid = Column(String)
-    imgurl = Column(String)
-    index = Column(String)# id from userimages table, use for delete similar images
-
-    def __init__(self, userid, imgurl, index):
-        self.userid = userid
-        self.imgurl = imgurl
-        self.index = index
+# class ImageGroup(Base):
+#
+#     __tablename__ = "imagegroup"
+#     id = Column(Integer, primary_key=True)
+#     userid = Column(String)
+#     images = relationship("UserImage", backref="ImageGroup")
+#
+#     def __init__(self, userid):
+#         self.userid = userid
 
 
 # create tables
