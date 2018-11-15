@@ -2,6 +2,7 @@ from flask import Flask, redirect, render_template, request, session, url_for, f
 from flask_dropzone import Dropzone
 from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 import os
+from functools import wraps
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine, Date, and_
 from database.tabledef import User, UserImage
@@ -28,30 +29,38 @@ app.config['DROPZONE_ALLOWED_FILE_TYPE'] = 'image/*'
 app.config['DROPZONE_REDIRECT_VIEW'] = 'view_images'
 
 
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if session.get('user_id'):
+            return f(*args, **kwargs)
+        else:
+            flash('You need to login first')
+            return redirect(url_for('home'))
+    return wrap
 
 @app.route('/')
 def home(status = None):
     if not session.get('user_id'):
-        return render_template('login.html', status = status)
-    else:
-        Session = scoped_session(sessionmaker(bind=engine))
-        sess = Session()
-        query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
-        result = query.all()
-        file_urls = []
-        for userimg in result:
-            photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
-            file_urls.append(photo_info)
-            session['file_urls'] = file_urls
-        sess.close()
-        return render_template('view_images.html', file_urls=file_urls)
+        return render_template('login.html', status = None)
+    Session = scoped_session(sessionmaker(bind=engine))
+    sess = Session()
+    query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
+    result = query.all()
+    file_urls = []
+    for userimg in result:
+        photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
+        file_urls.append(photo_info)
+        session['file_urls'] = file_urls
+    sess.close()
+    return render_template('view_images.html', file_urls=file_urls)
 
 
-@app.route('/signin', methods=['GET', 'POST'])
-def signin(status = None):
+@app.route('/signup', methods=['GET', 'POST'])
+def signup(status = None):
     if request.method == 'GET':
         if not session.get('user_id'):
-            return render_template('signin.html', status = status)
+            return render_template('signup.html', status = status)
         else:
             return redirect(url_for('home'))
     elif request.method == 'POST':
@@ -62,7 +71,7 @@ def signin(status = None):
             confirmedpassword = request.form['confirmpassword']
 
             if password != confirmedpassword:
-                return render_template('signin.html', status = True)
+                return render_template('signup.html', status = True)
 
             print(email + '\t' + username + '\t' + password + '\t' + confirmedpassword)
             
@@ -79,7 +88,8 @@ def signin(status = None):
 
 
 @app.route('/view_similar_images', methods=['GET', 'POST'])
-def view_similarimages():
+@login_required
+def view_similar_images():
     Session = scoped_session(sessionmaker(bind=engine))
     sess = Session()
     query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
@@ -118,14 +128,15 @@ def do_admin_login():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     session['user_id'] = None
     session.pop('file_urls', None)
     return home()
 
 
-# @app.route('/')
 @app.route('/upload_image', methods=['GET', 'POST'])
+@login_required
 def upload_image():
     # set session for image results
     if "file_urls" not in session:
@@ -154,7 +165,7 @@ def upload_image():
 
             file_urls.insert(0, photo_info)
 
-            userimg = UserImage(session['user_id'], photo_url, img.size, None, uploaddate='')
+            userimg = UserImage(session['user_id'], photo_url, img.size, None, uploaddate=datetime.date.today())
             sess.add(userimg)
 
         sess.commit()
@@ -165,8 +176,8 @@ def upload_image():
 
 
 @app.route('/view_images')
+@login_required
 def view_images():
-
     # redirect to home if no images to display
     if "file_urls" not in session or session['file_urls'] == []:
         return redirect(url_for('upload_image'))
@@ -179,4 +190,4 @@ def view_images():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=4000)
+    app.run(host='0.0.0.0', port=4000, debug=True)

@@ -14,7 +14,8 @@
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet"> 
 
     <!-- Custom styles for this template -->
-    <link href="/static/thumbnail-gallery.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+    <link href="/static/thumbnail_gallery.css" rel="stylesheet">
 
     <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
@@ -42,7 +43,6 @@
 
             <li class="nav-item">
               <a class="nav-link" href="/upload_image">Upload 
-                <!-- <span class="sr-only">(current)</span> -->
               </a>
             </li>
             <li class="nav-item">
@@ -67,37 +67,14 @@
       <div class="m-p-g">
         <div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">
             {% for img in file_urls %}
-            <img src="{{img.url}}" data-full="{{img.url}}" class="m-p-g__thumbs-img" />
+            <img src="{{img.url}}" data-full="{{img.url}}" class="m-p-g__thumbs-img" onclick="onimgclick()"/>
             {% endfor %}
         </div>
         <div class="m-p-g__fullscreen"></div>
       </div>
-      <!-- <h1 class="my-4 text-center text-lg-left">Gallery</h1>
-
-      <div class="row text-center text-lg-left">
-      
-      <section>
-        {% for img in file_urls %}
-        <div class="div-img" style="width:{{img.width*200/img.height}}px;flex-grow:{{img.width*200/img.height}}">
-          <i style="padding-bottom:{{img.height/img.width*100}}%"></i>
-          <img src="{{img.url}}" alt="">
-        </div>
-        {% endfor %}
-        </section>
-      </div> -->
-
 
 
     </div>
-    <!-- /.container -->
-
-    <!-- Footer -->
-    <!-- <footer class="py-5 bg-dark">
-      <div class="container">
-        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
-      </div> -->
-      <!-- /.container -->
-    <!-- </footer> -->
 
     <!-- Bootstrap core JavaScript -->
     <script>
@@ -108,19 +85,16 @@
           var gallery = new MaterialPhotoGallery(elem);
         });
         
-        
-        var img = document.querySelector(".m-p-g__thumbs-img");
-        
-        img.onclick = function(){
-          var nav = document.querySelector(".navbar");
-          nav.style.display = "none";
+      function onimgclick() {
+        $('.navbar').removeClass('d-flex')
+          $('.navbar').addClass('d-none')
 
           var close = document.querySelector(".m-p-g__controls-close");
           close.onclick = function(){
-            nav.style.display = "flex";
+            $('.navbar').addClass('d-flex')
+            $('.navbar').removeClass('d-none')
           }
-        }
-        
+      }
         
         
         

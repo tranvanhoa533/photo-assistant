@@ -45,16 +45,6 @@ class UserImage(Base):
         self.uploaddate = uploaddate
         self.groupid = groupid
 
-# class ImageGroup(Base):
-#
-#     __tablename__ = "imagegroup"
-#     id = Column(Integer, primary_key=True)
-#     userid = Column(String)
-#     images = relationship("UserImage", backref="ImageGroup")
-#
-#     def __init__(self, userid):
-#         self.userid = userid
-
 
 # create tables
 Base.metadata.create_all(engine)
