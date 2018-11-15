@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/static/style.css" type="text/css">
+<link rel="stylesheet" href="/static/sign_in_up.css" type="text/css">
 {% block body %}
 {% if session['user_id'] %}
 <p>You're logged in already!</p>
@@ -29,7 +29,7 @@
  
                 <input type="submit" value="Log in" class="btn btn-primary btn-large btn-block" >
                 <hr>
-                <a href="/signin" style="text-decoration-line: none;"><input type="button" value="Sign Up" class="btn btn-primary btn-large btn-block" ></a>
+                <a href="/signup" style="text-decoration-line: none;"><input type="button" value="Sign Up" class="btn btn-primary btn-large btn-block" ></a>
 			    <br>
 			</div>
 		</div>
