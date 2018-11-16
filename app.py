@@ -4,12 +4,19 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_cl
 import os
 from functools import wraps
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import create_engine, Date, and_
+from sqlalchemy import create_engine, Date
 from database.tabledef import User, UserImage
 from PIL import Image
 import requests
 from io import BytesIO
 import datetime
+from multiprocessing import Queue
+
+import image_processing
+import imagehash
+
+image_queue = Queue()
+image_processer = None
 
 engine = create_engine('sqlite:///ap.db', echo=True)
 
@@ -138,6 +145,8 @@ def logout():
 @app.route('/upload_image', methods=['GET', 'POST'])
 @login_required
 def upload_image():
+
+    global image_queue
     # set session for image results
     if "file_urls" not in session:
         session['file_urls'] = []
@@ -165,14 +174,18 @@ def upload_image():
 
             file_urls.insert(0, photo_info)
 
-            userimg = UserImage(session['user_id'], photo_url, img.size, None, uploaddate=datetime.date.today())
-            sess.add(userimg)
+            id = int(datetime.datetime.now().strftime("%Y%m%d%H%M%f"))
+            user_img = UserImage(id, session['user_id'], photo_url, img.size, None, uploaddate=datetime.date.today())
+            sess.add(user_img)
+            sess.commit()
+            image_queue.put((id, img))
 
-        sess.commit()
+       
         session['file_urls'] = file_urls
         return "uploading..."
     # return dropzone template on GET request    
     return render_template('upload_image.html')
+
 
 
 @app.route('/view_images')
@@ -189,5 +202,15 @@ def view_images():
     return render_template('view_images.html', file_urls=file_urls)
 
 
+@app.route('/show_duplicated_images')
+@login_required
+def show_duplicated_images():
+    image_processer.image_clustering()
+
+def start_processes():
+    return image_processing.start_process(image_queue)
+
 if __name__ == "__main__":
+
+    image_processer = start_processes()
     app.run(host='0.0.0.0', port=4000, debug=True)
