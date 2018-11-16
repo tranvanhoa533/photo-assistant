@@ -14,8 +14,18 @@
         <!-- Custom styles for this template -->
         <link href="/static/style.css" rel="stylesheet">
 
+        <script>
+        var dz = null;
+        </script>
+        <style>
+        .dz-preview {
+            display: none!important;
+        }
+        </style>
         {{ dropzone.load() }}
         {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
+        <!-- {{ dropzone.config(custom_options='createImageThumbnails: false', custom_init='dz = this; dz.on("totaluploadprogress", function (progress,b,c) {console.log(progress);console.log(c/(b+c));console.log("---");}); dz.on("addedfile", function(file) { /*console.log(file);*/}); ') }} -->
+    
     </head>
     <body>
         
@@ -44,7 +54,7 @@
                     <a class="nav-link" href="#">Album</a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="#">Assistant</a>
+                    <a class="nav-link" href="/show_duplicated_images">Assistant</a>
                     </li>
                     <li class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
@@ -56,9 +66,15 @@
 
         <div class="container">
 
+            <div id="the-progressdiv">
+            <span class="the-progress-text">ssadasd</span>
+            </div>
+
             <h1 class="my-4 text-center text-lg-left">Upload images!</h1>
+
             {{ dropzone.create(action_view='upload_image') }}
         
+
         </div>
     </body>
 </html>

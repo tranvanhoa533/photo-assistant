@@ -1,6 +1,6 @@
 from sqlalchemy import *
 from sqlalchemy import create_engine, ForeignKey
-from sqlalchemy import Column, Date, Integer, String
+from sqlalchemy import Column, Date, Integer, String, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, backref
  
@@ -27,7 +27,7 @@ class User(Base):
 class UserImage(Base):
 
     __tablename__ = "userimages"
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     userid = Column(String)
     imgurl = Column(String)
     imgw = Column(Integer)
@@ -36,7 +36,8 @@ class UserImage(Base):
     uploaddate = Column(String)
     groupid = Column(Integer, nullable=True)
 
-    def __init__(self, userid, imgurl, imgsize, groupid, imghash = '', uploaddate = ''):
+    def __init__(self, id, userid, imgurl, imgsize, groupid, imghash = '', uploaddate = ''):
+        self.id = id
         self.userid = userid
         self.imgurl = imgurl
         self.imgw = imgsize[0]
