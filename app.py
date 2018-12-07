@@ -162,7 +162,7 @@ def upload_image():
             # save the file with to our photos folder
             filename = photos.save(
                 file,
-                name=file.filename    
+                name=file.filename.lower()    
             )
             # append image urls
             photo_url = photos.url(filename)
