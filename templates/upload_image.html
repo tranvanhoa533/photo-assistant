@@ -17,14 +17,9 @@
         <script>
         var dz = null;
         </script>
-        <style>
-        .dz-preview {
-            display: none!important;
-        }
-        </style>
+ 
         {{ dropzone.load() }}
         {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
-        <!-- {{ dropzone.config(custom_options='createImageThumbnails: false', custom_init='dz = this; dz.on("totaluploadprogress", function (progress,b,c) {console.log(progress);console.log(c/(b+c));console.log("---");}); dz.on("addedfile", function(file) { /*console.log(file);*/}); ') }} -->
     
     </head>
     <body>
