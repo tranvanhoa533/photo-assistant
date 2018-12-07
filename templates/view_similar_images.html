@@ -65,20 +65,20 @@
 </nav>
 
 <!-- Page Content -->
-        <div class="container">
-            <div class="m-p-g">
-                <div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">
-                {% for group in groups %}
-                    {% for img in groups[group] %}
-                        <img src="{{ img.url }}" data-full="{{img.url}}" class="m-p-g__thumbs-img"/>
-                    {% endfor %}
-                    <hr>
+<div class="container">
+    <div class="m-p-g">
+        <div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">
+            {% for group in groups %}
+                {% for img in groups[group] %}
+                    <img src="{{ img.url }}" data-full="{{ img.url }}" class="m-p-g__thumbs-img"/>
                 {% endfor %}
-                </div>
-                <div class="m-p-g__fullscreen"></div>
-            </div>
+                <hr>
+            {% endfor %}
         </div>
-    <!-- <h1 class="my-4 text-center text-lg-left">Gallery</h1>
+        <div class="m-p-g__fullscreen"></div>
+    </div>
+</div>
+<!-- <h1 class="my-4 text-center text-lg-left">Gallery</h1>
 
       <div class="row text-center text-lg-left">
 
@@ -90,7 +90,7 @@
         </div>
         {% endfor %}
         </section>
-      </div> -->
+      </div>-->
 
 
 </div>
