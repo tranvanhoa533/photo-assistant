@@ -36,11 +36,11 @@ app.config['DROPZONE_ALLOWED_FILE_TYPE'] = 'image/*'
 app.config['DROPZONE_REDIRECT_VIEW'] = 'view_images'
 
 
-def login_required(f):
-    @wraps(f)
+def login_required(func):
+    @wraps(func)
     def wrap(*args, **kwargs):
         if session.get('user_id'):
-            return f(*args, **kwargs)
+            return func(*args, **kwargs)
         else:
             flash('You need to login first')
             return redirect(url_for('home'))
