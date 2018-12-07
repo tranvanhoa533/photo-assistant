@@ -3,3 +3,5 @@ Flask-SqlAlchemy
 flask-uploads
 flask-dropzone
 flask
+imagehash
+nmslib
