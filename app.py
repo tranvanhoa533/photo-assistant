@@ -206,6 +206,7 @@ def view_images():
 @login_required
 def show_duplicated_images():
     image_processer.image_clustering()
+    return redirect(url_for('view_similar_images'))
 
 def start_processes():
     return image_processing.start_process(image_queue)
