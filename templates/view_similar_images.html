@@ -130,7 +130,6 @@
             contentType: 'application/json;charset=UTF-8',
             data: JSON.stringify({data: deleted_ids}),
             success: function (data) {
-                alert(data.success);
                 if (data.success == undefined) { // if true (1)
                     setTimeout(function () {// wait for 5 secs(2)
                         location.reload(); // then reload the page.(3)
