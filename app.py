@@ -44,12 +44,14 @@ def login_required(func):
         else:
             flash('You need to login first')
             return redirect(url_for('home'))
+
     return wrap
 
+
 @app.route('/')
-def home(status = None):
+def home(status=None):
     if not session.get('user_id'):
-        return render_template('login.html', status = None)
+        return render_template('login.html', status=None)
     Session = scoped_session(sessionmaker(bind=engine))
     sess = Session()
     query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']]))
@@ -64,10 +66,10 @@ def home(status = None):
 
 
 @app.route('/signup', methods=['GET', 'POST'])
-def signup(status = None):
+def signup(status=None):
     if request.method == 'GET':
         if not session.get('user_id'):
-            return render_template('signup.html', status = status)
+            return render_template('signup.html', status=status)
         else:
             return redirect(url_for('home'))
     elif request.method == 'POST':
@@ -78,10 +80,10 @@ def signup(status = None):
             confirmedpassword = request.form['confirmpassword']
 
             if password != confirmedpassword:
-                return render_template('signup.html', status = True)
+                return render_template('signup.html', status=True)
 
             print(email + '\t' + username + '\t' + password + '\t' + confirmedpassword)
-            
+
             Session = scoped_session(sessionmaker(bind=engine))
             sess = Session()
             user = User(username, password, email)
@@ -89,7 +91,7 @@ def signup(status = None):
             sess.commit()
             sess.close()
             return redirect(url_for('home'))
-        except Exception as ex :
+        except Exception as ex:
             print("error in insert operation", ex)
             return "Register error"
 
@@ -104,13 +106,31 @@ def view_similar_images():
     groups = {}
     for userimg in result:
         if userimg.groupid is not None:
-            photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
+            photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh, 'id': userimg.id}
             if userimg.groupid not in groups:
                 groups[userimg.groupid] = []
             groups[userimg.groupid].append(photo_info)
     sess.close()
     print(groups)
     return render_template('view_similar_images.html', groups=groups)
+
+
+@app.route('/delete_images', methods=['GET', 'POST'])
+@login_required
+def delete_images():
+    print("enter delete")
+    Session = scoped_session(sessionmaker(bind=engine))
+    sess = Session()
+    if request.method == "POST":
+        data = request.get_json()
+        list_ids = data['data']
+        for did in list_ids:
+            print("delete id: " + did)
+            sess.query(UserImage).filter(UserImage.id == did).delete()
+            sess.commit()
+        sess.close()
+    return redirect(url_for("view_similar_images"))
+
 
 @app.route('/login', methods=['POST'])
 def do_admin_login():
@@ -119,11 +139,11 @@ def do_admin_login():
 
     Session = scoped_session(sessionmaker(bind=engine))
     sess = Session()
-    query = sess.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]) )
+    query = sess.query(User).filter(User.username.in_([POST_USERNAME]), User.password.in_([POST_PASSWORD]))
     print(POST_USERNAME + '\t' + POST_PASSWORD)
     result = query.first()
     sess.close()
-    
+
     if result:
         status = None
         session['user_name'] = POST_USERNAME
@@ -145,7 +165,6 @@ def logout():
 @app.route('/upload_image', methods=['GET', 'POST'])
 @login_required
 def upload_image():
-
     global image_queue
     # set session for image results
     if "file_urls" not in session:
@@ -162,7 +181,7 @@ def upload_image():
             # save the file with to our photos folder
             filename = photos.save(
                 file,
-                name=file.filename.lower()    
+                name=file.filename.lower()
             )
             # append image urls
             photo_url = photos.url(filename)
@@ -180,12 +199,10 @@ def upload_image():
             sess.commit()
             image_queue.put((id, img))
 
-       
         session['file_urls'] = file_urls
         return "uploading..."
     # return dropzone template on GET request    
     return render_template('upload_image.html')
-
 
 
 @app.route('/view_images')
@@ -194,7 +211,7 @@ def view_images():
     # redirect to home if no images to display
     if "file_urls" not in session or session['file_urls'] == []:
         return redirect(url_for('upload_image'))
-        
+
     # set the file_urls and remove the session variable
     file_urls = session['file_urls']
     print(file_urls)
@@ -208,10 +225,11 @@ def show_duplicated_images():
     image_processer.image_clustering()
     return redirect(url_for('view_similar_images'))
 
+
 def start_processes():
     return image_processing.start_process(image_queue)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     image_processer = start_processes()
     app.run(host='0.0.0.0', port=4000, debug=True)

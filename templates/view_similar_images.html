@@ -67,7 +67,8 @@
 
 
     <div class="row text-center text-lg-left">
-
+        <a style="text-decoration-line: none; margin-bottom: 15px; margin-top: 5px"><input
+                id="delete_btn" type="button" value="Delete" class="btn btn-primary btn-large btn-block"></a>
         {% for group in groups %}
 
             {% if groups[group]|length > 1 %}
@@ -78,7 +79,7 @@
 
                             <label class="image-checkbox temp" style="padding-bottom:{{ img.height/img.width*100 }}%">
                                 <img src="{{ img.url }}" alt="">
-                                <input type="checkbox" name="image[]" value=""/>
+                                <input type="checkbox" name="image[]" value="{{ img.id }}"/>
                                 <i class="fa fa-check hidden"></i>
                             </label>
                         </div>
@@ -113,6 +114,33 @@
 
         e.preventDefault();
     });
+
+    $("#delete_btn").on("click", function () {
+        var deleted_ids = [];
+        $(".image-checkbox").each(function () {
+            var id = $(this).find('input[type="checkbox"]').val();
+            {#alert(id.toString());#}
+            deleted_ids.push(id);
+
+        });
+        {#alert(deleted_ids);#}
+        $.ajax({
+            type: "POST",
+            url: "/delete_images",
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({data: deleted_ids}),
+            success: function (data) {
+                alert(data.success);
+                if (data.success == undefined) { // if true (1)
+                    setTimeout(function () {// wait for 5 secs(2)
+                        location.reload(); // then reload the page.(3)
+                    }, -1000);
+                }
+            }
+        });
+    })
+    ;
+
 </script>
 
 
