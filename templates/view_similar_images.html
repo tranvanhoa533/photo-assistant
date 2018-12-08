@@ -14,6 +14,7 @@
 
     <!-- Bootstrap core CSS -->
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 
     <!-- Custom styles for this template -->
     <link href="/static/thumbnail_gallery.css" rel="stylesheet">
@@ -68,18 +69,22 @@
     <div class="row text-center text-lg-left">
 
         {% for group in groups %}
-            <section>
-                {% if groups[group]|length > 1 %}
 
+            {% if groups[group]|length > 1 %}
+                <section>
                     {% for img in groups[group] %}
                         <div class="div-img"
                              style="width:{{ img.width*200/img.height }}px;flex-grow:{{ img.width*200/img.height }}">
-                            <i style="padding-bottom:{{ img.height/img.width*100 }}%"></i>
-                            <img src="{{ img.url }}" alt="">
+
+                            <label class="image-checkbox temp" style="padding-bottom:{{ img.height/img.width*100 }}%">
+                                <img src="{{ img.url }}" alt="">
+                                <input type="checkbox" name="image[]" value=""/>
+                                <i class="fa fa-check hidden"></i>
+                            </label>
                         </div>
                     {% endfor %}
-                {% endif %}
-            </section>
+                </section>
+            {% endif %}
         {% endfor %}
 
     </div>
@@ -87,12 +92,29 @@
 <!-- /.container -->
 
 <!-- Bootstrap core JavaScript -->
-<script>
-
-
-</script>
 <script src="/static/jquery/jquery.min.js"></script>
 <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
+{#<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" ></script>#}
+<script>
+    $(".image-checkbox").each(function () {
+        if ($(this).find('input[type="checkbox"]').first().attr("checked")) {
+            $(this).addClass('image-checkbox');
+        }
+        else {
+            $(this).removeClass('image-checkbox');
+        }
+    });
+
+    // sync the state to the input
+    $(".temp").on("click", function (e) {
+        $(this).toggleClass('image-checkbox');
+        var $checkbox = $(this).find('input[type="checkbox"]');
+        $checkbox.prop("checked", !$checkbox.prop("checked"))
+
+        e.preventDefault();
+    });
+</script>
+
 
 </body>
 
