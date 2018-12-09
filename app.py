@@ -58,7 +58,7 @@ def home(status=None):
     result = query.all()
     file_urls = []
     for userimg in result:
-        photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh}
+        photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh, 'id': userimg.id}
         file_urls.append(photo_info)
         session['file_urls'] = file_urls
     sess.close()
@@ -129,6 +129,8 @@ def delete_images():
             sess.query(UserImage).filter(UserImage.id == did).delete()
             sess.commit()
         sess.close()
+        if len(list_ids):
+            session.pop('file_urls', None)
     return redirect(url_for("view_similar_images"))
 
 
@@ -209,8 +211,8 @@ def upload_image():
 @login_required
 def view_images():
     # redirect to home if no images to display
-    if "file_urls" not in session or session['file_urls'] == []:
-        return redirect(url_for('upload_image'))
+    if "file_urls" not in session:
+        return redirect(url_for('home'))
 
     # set the file_urls and remove the session variable
     file_urls = session['file_urls']
