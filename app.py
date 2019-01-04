@@ -220,6 +220,33 @@ def view_images():
 
     return render_template('view_images.html', file_urls=file_urls)
 
+@app.route('/view_albums')
+@login_required
+def view_albums():
+    Session = scoped_session(sessionmaker(bind=engine))
+    sess = Session()
+    query = sess.query(UserImage.classid.distinct())
+    result = query.all()
+    list_class = []
+    for userimg in result:
+        photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh, 'image_id': userimg.id}
+    return render_template('image_album.html', list_class = list_class)
+
+
+@app.route('/view_images_of_album/<int:id>')
+@login_required
+def view_images_of_album(id):
+    Session = scoped_session(sessionmaker(bind=engine))
+    sess = Session()
+    query = sess.query(UserImage).filter(UserImage.userid.in_([session['user_id']])).filter(UserImage.classid == id)
+    result = query.all()
+    file_urls = []
+    for userimg in result:
+        photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh, 'id': userimg.id}
+        file_urls.append(photo_info)
+    sess.close()
+    return render_template('view_images.html', file_urls=file_urls)
+
 
 @app.route('/show_duplicated_images')
 @login_required

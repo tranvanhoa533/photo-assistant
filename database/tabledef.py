@@ -35,8 +35,9 @@ class UserImage(Base):
     imghash = Column(String)
     uploaddate = Column(String)
     groupid = Column(Integer, nullable=True)
+    classid = Column(Integer, nullable=True)
 
-    def __init__(self, id, userid, imgurl, imgsize, groupid, imghash = '', uploaddate = ''):
+    def __init__(self, id, userid, imgurl, imgsize, groupid, classid = -1, imghash = '', uploaddate = ''):
         self.id = id
         self.userid = userid
         self.imgurl = imgurl
@@ -45,6 +46,20 @@ class UserImage(Base):
         self.imghash = imghash
         self.uploaddate = uploaddate
         self.groupid = groupid
+        self.classid = classid
+
+
+class ClassImage(Base):
+
+    __tablename__ = "classimages"
+    id = Column(BigInteger, primary_key=True)
+    name = Column(String)
+    definition = Column(String)
+
+    def __init__(self, name, definition = ""):
+        self.id = id
+        self.name = name
+        self.definition = definition
 
 
 # create tables

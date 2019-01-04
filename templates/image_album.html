@@ -15,7 +15,7 @@
 
     <!-- Custom styles for this template -->
     <link href="/static/style.css" rel="stylesheet">
-    <link href="/static/thumbnail_gallery _view_image.css" rel="stylesheet">
+    <link href="/static/image_album.css" rel="stylesheet">
 
     <link href='https://fonts.googleapis.com/css?family=Roboto+Mono:400,300' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
@@ -64,42 +64,17 @@
 
     <!-- Page Content -->
     <div class="container">
-      <div class="m-p-g">
-        <div class="m-p-g__thumbs" data-google-image-layout data-max-height="350">
-            {% for img in file_urls %}
-            <img src="{{img.url}}" data-full="{{img.url}}" class="m-p-g__thumbs-img" onclick="onimgclick()"/>
-            {% endfor %}
+        {% for class_id in list_class %}
+        <div class="gallery">
+            <a  href="/view_images_of_album/{{class_id.id}}">
+                <img src="{{class_id.url}}" alt="{{class_id.name}}" width="300" height="200">
+            </a>
+            <div class="desc">{{class_id.name}}</div>
         </div>
-        <div class="m-p-g__fullscreen"></div>
-      </div>
-
-
+        {% endfor %}
     </div>
 
     <!-- Bootstrap core JavaScript -->
-    <script>
-        var elem = document.querySelector('.m-p-g');
-      
-        document.addEventListener('DOMContentLoaded', function() {
-          // document.getElementsByClassName("navbar").style.top = "-50px";
-          var gallery = new MaterialPhotoGallery(elem);
-        });
-        
-      function onimgclick() {
-        $('.navbar').removeClass('d-flex')
-          $('.navbar').addClass('d-none')
-
-          var close = document.querySelector(".m-p-g__controls-close");
-          close.onclick = function(){
-            $('.navbar').addClass('d-flex')
-            $('.navbar').removeClass('d-none')
-          }
-      }
-        
-        
-        
-    </script>
-    <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/45226/material-photo-gallery.min.js'></script>
     <script src="/static/jquery/jquery.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
 
