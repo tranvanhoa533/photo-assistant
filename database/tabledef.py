@@ -52,12 +52,11 @@ class UserImage(Base):
 class ClassImage(Base):
 
     __tablename__ = "classimages"
-    id = Column(BigInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String)
     definition = Column(String)
 
     def __init__(self, name, definition = ""):
-        self.id = id
         self.name = name
         self.definition = definition
 

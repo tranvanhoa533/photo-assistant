@@ -5,7 +5,7 @@ import os
 from functools import wraps
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine, Date
-from database.tabledef import User, UserImage
+from database.tabledef import User, UserImage, ClassImage
 from PIL import Image
 import requests
 from io import BytesIO
@@ -225,11 +225,15 @@ def view_images():
 def view_albums():
     Session = scoped_session(sessionmaker(bind=engine))
     sess = Session()
-    query = sess.query(UserImage.classid.distinct())
+    query = sess.query(UserImage, ClassImage).filter(UserImage.classid == ClassImage.id).distinct(ClassImage.id)
     result = query.all()
     list_class = []
+    classid = []
     for userimg in result:
-        photo_info = {'url': userimg.imgurl, 'width': userimg.imgw, 'height': userimg.imgh, 'image_id': userimg.id}
+        if userimg[1].id not in classid:
+            photo_info = {'url': userimg[0].imgurl, 'width': userimg[0].imgw, 'height': userimg[0].imgh, 'image_id': userimg[0].id, 'classid': userimg[1].id, 'classname': userimg[1].name}
+            classid.append(userimg[1].id)
+            list_class.append(photo_info)
     return render_template('image_album.html', list_class = list_class)
 
 

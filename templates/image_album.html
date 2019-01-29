@@ -66,10 +66,10 @@
     <div class="container">
         {% for class_id in list_class %}
         <div class="gallery">
-            <a  href="/view_images_of_album/{{class_id.id}}">
-                <img src="{{class_id.url}}" alt="{{class_id.name}}" width="300" height="200">
+            <a  href="/view_images_of_album/{{class_id.classid}}">
+                <img src="{{class_id.url}}" alt="{{class_id.classname}}" width="300" height="200">
             </a>
-            <div class="desc">{{class_id.name}}</div>
+            <div class="desc">{{class_id.classname}}</div>
         </div>
         {% endfor %}
     </div>
