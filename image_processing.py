@@ -32,10 +32,16 @@ class ImageProcessing(Process):
             hash_raw = imagehash.phash(im).hash.flatten()
             hash_str = ' '.join([str(int(item)) for item in hash_raw])
 
-            im_np = np.expand_dims(np.array(im.convert("RGB").resize((224, 224))), axis=0).astype(np.float)
-            im_input = preprocess_input(im_np)
-            prediction = self.model.predict(preprocess_input(im_input))
-            classid = class_id_map_dict[decode_predictions(prediction)[0][0][1]]
+            x = np.array(im.convert("RGB").resize((224, 224))).astype(np.float)
+            x = np.expand_dims(x, axis=0)
+            x = preprocess_input(x)
+            preds = self.model.predict(x)
+            classid = class_id_map_dict[decode_predictions(preds)[0][0][1]] + 1
+            
+            # im_np = np.expand_dims(np.array(im.convert("RGB").resize((224, 224))), axis=0).astype(np.float)
+            # im_input = preprocess_input(im_np)
+            # prediction = self.model.predict(preprocess_input(im_input))
+            # classid = class_id_map_dict[decode_predictions(prediction)[0][0][1]]
 
             query = sess.query(UserImage).filter(UserImage.id.in_((id,)))
             user_img = query.first()
